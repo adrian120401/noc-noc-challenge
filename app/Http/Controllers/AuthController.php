@@ -6,15 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['login','signup']]);
-    }
-
     public function login(Request $request)
     {
         $request->validate([
@@ -24,8 +19,7 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        $token = Auth::attempt($credentials);
-        if (!$token) {
+        if (!Auth::attempt($credentials)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized',
@@ -33,6 +27,9 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+
+        $token = JWTAuth::fromUser($user);
+
         return response()->json([
                 'status' => 'success',
                 'user' => $user,
@@ -55,17 +52,28 @@ class AuthController extends Controller
             return response()->json(['error' => $validator->errors()], 400);
         }
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'superadmin'
+            'role' => 'employee'
         ]);
 
+        $token = Auth::login($user);
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
+            'user' => $user,
+            'authorisation' => [
+                'token' => $token,
+                'type' => 'bearer',
+            ]
         ]);
+    }
+
+    public function changePassword()
+    {
+
     }
 
     public function logout()
