@@ -21,8 +21,8 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::get('tasks', 'getAll');
         Route::post('tasks', 'create');
         Route::delete('tasks/{id}', 'delete');
-        Route::patch('tasks/update/{id}/user', 'updateUser');
-        Route::patch('tasks/update/{id}/status', 'updateStatus');
+        Route::patch('tasks/{id}/user', 'updateUser');
+        Route::patch('tasks/{id}/status', 'updateStatus');
     });
 
     Route::controller(CommentController::class)->group(function () {

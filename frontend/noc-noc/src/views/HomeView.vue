@@ -17,10 +17,8 @@ export default {
     };
   },
   async created() {
-
-    const token = localStorage.getItem('token');
     try {
-      this.tasks = await getTasks(token);
+      this.tasks = await getTasks();
     } catch (error) {
       console.error('Error al obtener las tareas:', error);
     }
