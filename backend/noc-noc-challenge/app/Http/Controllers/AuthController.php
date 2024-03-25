@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -19,7 +18,8 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (!Auth::attempt($credentials)) {
+        $token = Auth::attempt($credentials);
+        if (!$token) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized',
@@ -27,9 +27,6 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-
-        $token = JWTAuth::fromUser($user);
-
         return response()->json([
                 'status' => 'success',
                 'user' => $user,

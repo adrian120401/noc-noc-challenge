@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TaskAttachment extends Model
+class Task extends Model
 {
     public $incrementing = false;
     use HasFactory;
+    protected $fillable = ['title', 'description', 'status' ,'assigned_to', 'created_by'];
 }
