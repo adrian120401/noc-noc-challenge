@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
+    public function getByTask($id)
+    {
+        $comments = Comment::with('user')->where('task_id', $id)->orderBy('updated_at', 'desc')->get();
+
+        return response()->json(['comments' => $comments]);
+    }
     public function create(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -32,6 +38,8 @@ class CommentController extends Controller
             'comment' => $request->comment,
             'user_id' => $user->id,
         ]);
+
+        $comment->load('user');
 
         return response()->json([
             'status' => 'success',

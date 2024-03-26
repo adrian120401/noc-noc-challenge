@@ -11,6 +11,12 @@ use Illuminate\Support\Str;
 
 class TaskAttachmentController extends Controller
 {
+    public function getByTask($id)
+    {
+        $files = TaskAttachment::with('user')->where('task_id', $id)->orderBy('updated_at', 'desc')->get();
+
+        return response()->json(['files' => $files]);
+    }
     public function create(Request $request, $id)
     {
         $task = Task::find($id);
@@ -30,10 +36,12 @@ class TaskAttachmentController extends Controller
             'filename' => $request->file('file')->getClientOriginalName(),
         ]);
 
+        $file->load('user');
+
         return response()->json([
             'status' => 'success',
             'message' => 'Comment created successfully',
-            'comment' => $file,
+            'file' => $file,
         ]);
     }
 

@@ -29,4 +29,72 @@ export const updateStatus = async ( id, status) => {
     const response = await axiosInstance.patch(`tasks/${id}/status`, { status: status }, config);
     return response.data;
 }
+
+export const updateUser = async ( id, user_id) => {
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axiosInstance.patch(`tasks/${id}/user`, { assigned_to: user_id }, config);
+    return response.data;
+}
+
+export const deleteTask = async ( id) => {
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axiosInstance.delete(`tasks/${id}`, config);
+    return response.data;
+}
+
+export const getComments = async ( id ) => {
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axiosInstance.get(`task/${id}/comments`, config);
+    return response.data;
+}
+
+export const createComment = async ( id, comment) => {
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axiosInstance.post(`task/${id}/comments`, { comment: comment }, config);
+    return response.data;
+}
+
+export const getUsers = async () => {
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axiosInstance.get('users', config);
+    return response.data;
+}
+
+export const uploadFile = async ( formData, id ) => {
+  const config = {
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data'
+    },
+  }
+  const response = await axiosInstance.post(`task/${id}/file`, formData, config);
+  return response.data;
+}
+
+export const getFiles = async ( id ) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  }
+  const response = await axiosInstance.get(`task/${id}/file`, config);
+  return response.data;
+}
+
+export const deleteFile = async ( id ) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  }
+  const response = await axiosInstance.delete(`file/${id}`, config);
+  return response.data
+}
+
 export default axiosInstance;

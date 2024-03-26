@@ -13,9 +13,9 @@ class TaskController extends Controller
 
         $user = Auth::user();
 
-        $userTasks = Task::where('assigned_to', $user->id)->get();
+        $userTasks = Task::with('assignedUser')->where('assigned_to', $user->id)->get();
 
-        $colleagueTasks = Task::where('assigned_to', '!=', $user->id)->get();
+        $colleagueTasks = Task::with('assignedUser')->where('assigned_to', '!=', $user->id)->get();
 
         return response()->json([
             'user_tasks' => $userTasks,

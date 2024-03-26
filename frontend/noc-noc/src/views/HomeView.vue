@@ -33,7 +33,12 @@ export default {
     </header>
     <div class="">
       <h2>Mis tareas ></h2>
+      <template v-if="tasks.user_tasks.length > 0">
         <ListView :tasks="tasks.user_tasks" />
+      </template>
+      <template v-else>
+        <p>You do not have any task assigned.</p>
+      </template>
     </div>
     <div class="">
       <h2>Otras tareas ></h2>
