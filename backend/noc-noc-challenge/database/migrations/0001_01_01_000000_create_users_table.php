@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('id')->primary()->default(DB::raw('(UUID())'));
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('password');
+            $table->string('password')->nullable();;
             $table->rememberToken();
             $table->enum('role', ['superadmin', 'employee'])->default('employee');
             $table->timestamps();

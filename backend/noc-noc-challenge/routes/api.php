@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Route;
 Route::controller(AuthController::class)->group(function () {
     Route::post('auth/login', 'login');
     Route::post('auth/signup', 'signup');
+    Route::post('auth/password', 'setPassword');
+    Route::post('auth/forgot', 'forgotPassword');
 });
+
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::controller(AuthController::class)->group(function () {

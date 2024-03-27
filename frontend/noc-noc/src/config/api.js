@@ -116,4 +116,14 @@ export const getReport = async (dateStart, dateEnd) => {
   return response.data
 }
 
+export const setPassword = async (token, password) => {
+  const response = await axiosInstance.post('auth/password', { password: password, remember_token: token})
+  return response.data
+}
+
+export const forgotPassword = async (email) => {
+  const response = await axiosInstance.post('auth/forgot', { email: email })
+  return response.data
+}
+
 export default axiosInstance

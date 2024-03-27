@@ -5,7 +5,7 @@ import ListView from '@/views/ListView.vue';
 import AddTaskModal from '@/components/AddTaskModal.vue';
 import ReportModal from '@/components/ReportModal.vue';
 
-const user = localStorage.getItem('user');
+/* const user = localStorage.getItem('user'); */
 export default {
   components: {
     ListView,
@@ -23,7 +23,7 @@ export default {
       otherTasksOpen: false,
       modalOpen: false,
       modalOpenReport: false,
-      user: JSON.parse(user)
+      user: null
     };
   },
   watch: {
@@ -31,14 +31,17 @@ export default {
       this.getUserData();
     }
   },
-  async mounted() {
+  async created() {
     this.getUserData();
     this.tasks = await getTasks();
   },
   methods: {
     getUserData() {
       const user = localStorage.getItem('user');
-      if (user) {
+      if (!user) {
+        this.$router.push('/login');
+      }
+      else {
         this.user = JSON.parse(user);
       }
     },
@@ -75,7 +78,7 @@ export default {
     <header class="text-center">
       <h1 class="text-3xl font-bold text-gray-800 mb-4">Task Managment</h1>
     </header>
-    <template v-if="user.role === 'superadmin'">
+    <template v-if="user?.role === 'superadmin'">
       <div class="flex justify-between mb-4">
         <div>
           <button @click="openModal()"

@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Mail\WelcomeMail;
+use App\Mail\ForgotPasswordMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -27,6 +31,7 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+
         return response()->json([
                 'status' => 'success',
                 'user' => $user,
@@ -42,7 +47,6 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
             'role' => 'required|in:superadmin,employee',
         ]);
 
@@ -50,30 +54,74 @@ class AuthController extends Controller
             return response()->json(['error' => $validator->errors()], 400);
         }
 
+        $token = Str::random(20);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => null,
+            'remember_token' => $token,
             'role' => $request->role,
         ]);
 
-        $credentials = $request->only('email', 'password');
+        $frontendUrl = env('FRONTEND_URL');
+        $passwordResetUrl = $frontendUrl . '/password?token=' . $user->remember_token;
 
-        $token = Auth::attempt($credentials);
+        Mail::to($user->email)->send(new WelcomeMail($user, $passwordResetUrl));
+
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
-            'user' => $user,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
+            'user' => $user
         ]);
     }
 
-    public function changePassword()
+    public function setPassword(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string',
+            'remember_token'=> 'required|string',
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $user = User::where('remember_token', $request->remember_token)->first();
+
+        $user->password= Hash::make($request->password);
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password created successfully',
+            'user' => $user
+        ]);
+
+    }
+    public function forgotPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        $token = Str::random(20);
+
+        $user->remember_token = $token;
+        $user->save();
+
+        $frontendUrl = env('FRONTEND_URL');
+        $passwordResetUrl = $frontendUrl . '/password?token=' . $user->remember_token;
+
+        Mail::to($user->email)->send(new ForgotPasswordMail($passwordResetUrl));
+        return response()->json([
+            'status' => 'success',
+        ]);
     }
 
     public function logout()
