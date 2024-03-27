@@ -43,6 +43,7 @@ class AuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
+            'role' => 'required|in:superadmin,employee',
         ]);
 
         if ($validator->fails()) {
@@ -53,10 +54,12 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'employee'
+            'role' => $request->role,
         ]);
 
-        $token = Auth::login($user);
+        $credentials = $request->only('email', 'password');
+
+        $token = Auth::attempt($credentials);
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',

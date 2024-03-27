@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('status', ['Pending', 'In progress', 'Blocked', 'Completed'])->default('Pending');
             $table->uuid('assigned_to');
             $table->uuid('created_by');
+            $table->timestamp('completed_at')->nullable();
             $table->timestamps();
 
             $table->foreign('assigned_to')->references('id')->on('users')->onDelete('cascade');

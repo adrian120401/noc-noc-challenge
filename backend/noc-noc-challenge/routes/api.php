@@ -8,8 +8,8 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
-    Route::post('login', 'login');
-    Route::post('signup', 'signup');
+    Route::post('auth/login', 'login');
+    Route::post('auth/signup', 'signup');
 });
 
 Route::group(['middleware' => 'auth:api'], function() {
@@ -24,6 +24,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::delete('tasks/{id}', 'delete');
         Route::patch('tasks/{id}/user', 'updateUser');
         Route::patch('tasks/{id}/status', 'updateStatus');
+        Route::get('tasks/report' , 'getReport');
     });
 
     Route::controller(CommentController::class)->group(function () {

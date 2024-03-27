@@ -123,8 +123,23 @@ class TaskController extends Controller
         ]);
 
         $task->status = $request->status;
+
+        if ($request->status === 'Completed') {
+            $task->completed_at = now();
+        }
+
         $task->save();
 
         return response()->json(['message' => 'Task updated successfully', 'task' => $task]);
+    }
+
+    public function getReport(Request $request)
+    {
+        $dateStart= $request->input('date_start');
+        $dateEnd= $request->input('date_end');
+        $tasks = Task::with('assignedUser')->where('completed_at', '>=', $dateStart)->where('completed_at', '<=', $dateEnd)->get();
+        return response()->json([
+            'tasks' => $tasks,
+        ]);
     }
 }
